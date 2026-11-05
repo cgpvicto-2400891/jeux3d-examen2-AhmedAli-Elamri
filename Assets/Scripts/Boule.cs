@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,6 +32,9 @@ public class Boule : MonoBehaviour
 
     [SerializeField, Tooltip("Multiplicateur de force appliqué lors de l'accélération.")]
     float multiplicateurForceAcceleration = 15.0f;
+    public static event Action StartPause;
+    public static event Action jeuCommence;
+    
 
     /// <summary>
     /// Obtient la vélocité actuelle de la boule.
@@ -73,9 +77,16 @@ public class Boule : MonoBehaviour
         controles.actions.FindAction("Diriger").performed += CommencerDirection;
         controles.actions.FindAction("Diriger").canceled += ArreterDirection;
         controles.actions.FindAction("Accelerer").performed += UtiliserChargeAcceleration;
+        controles.actions.FindAction("Pause").performed += PauseCommence;
         controles.actions.FindAction("Commencer").performed -= CommencerJeu;
 
         rigidbody.useGravity = true;
+        
+    }
+
+    private void PauseCommence(InputAction.CallbackContext context)
+    {
+        StartPause?.Invoke();
     }
 
     private void Update()

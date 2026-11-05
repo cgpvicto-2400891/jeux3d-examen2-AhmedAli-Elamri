@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(DetecteurBoule))]
@@ -6,6 +7,18 @@ public class Surface : MonoBehaviour
     /// <summary>
     /// Référence au détecteur de boule attaché à cette surface.
     /// </summary>
+    
+    private Animator _animator;
+    private int piecesRequiredPause = 5;
+
+    [SerializeField, Tooltip("ref a la Gestionnaire Piece")]
+    private GestionnairePieces pieceGestionnaire;
+
+    [SerializeField, Tooltip("ref a la Boule")]
+    private Boule boule;
+    private bool isPausing = false;
+    private float duree = 3f;
+
     public DetecteurBoule Detecteur { get; private set; }
 
     [SerializeField, Tooltip("Positions de génération des objets sur la surface.")]
@@ -13,7 +26,18 @@ public class Surface : MonoBehaviour
 
     private void Awake()
     {
-        Detecteur = GetComponent<DetecteurBoule>();
+        Detecteur = GetComponent<DetecteurBoule>(); 
+    }
+
+    private void Start()
+    {
+        Boule.StartPause += ArreterOscillentAnimation;
+        OnCommenceAnmimation();
+    }
+    private void OnDestroy()
+    {
+        Boule.StartPause-= ArreterOscillentAnimation;
+        Boule.jeuCommence -= OnCommenceAnmimation;
     }
 
     /// <summary>
@@ -42,5 +66,27 @@ public class Surface : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(transform.position + position, 0.2f);
         }
+    }
+    private void OnCommenceAnmimation()
+    {
+        _animator.SetBool("start", true);
+    }
+    private void ArreterOscillentAnimation()
+    {
+        
+        if (pieceGestionnaire.GetNombrePieces() >= piecesRequiredPause && !isPausing)
+        {
+            pieceGestionnaire.setNombrePieces(piecesRequiredPause);
+            StartCoroutine(StartPauseCouroutine());
+        }
+    }
+
+    IEnumerator StartPauseCouroutine()
+    {
+        isPausing = true;
+        _animator.SetBool("start", false);
+        yield return new WaitForSeconds(duree);
+        isPausing = false;
+        _animator.SetBool("start", true);
     }
 }

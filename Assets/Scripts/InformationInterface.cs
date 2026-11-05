@@ -22,6 +22,10 @@ public class InformationInterface : MonoBehaviour
 
     [SerializeField, Tooltip("Référence à la boule.")]
     private Boule boule;
+    [SerializeField, Tooltip("Référence au texte affichant la nombre de pieces.")]
+    TextMeshProUGUI textPieces;
+    [SerializeField, Tooltip("Référence à la gestionnairePieces.")]
+    private GestionnairePieces gestionnairePieces;
 
     // / Temps écoulé depuis le début du jeu
     private float tempsEcoule;
@@ -75,5 +79,8 @@ public class InformationInterface : MonoBehaviour
     
         texteVitesse.text = $"{boule.Velocite.magnitude:F2}";
         texteNombreSurfacesParcourues.text = gestionnaireSurface.SurfacesParcourues.ToString();
+        textPieces.text = $"pieces : {gestionnairePieces.GetNombrePieces()}";
+
+
     }
 }
